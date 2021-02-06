@@ -13,7 +13,7 @@ HoneywellManager_HR20_V1::HoneywellManager_HR20_V1(HardwareSerial* SerialPtr)
     serialPtr = SerialPtr;
 }
 
-ErrorCode HoneywellManager_HR20_V1::SetTargetTemperature(int temperature)
+ErrorCode HoneywellManager_HR20_V1::SetDesiredTemperature(int temperature)
 {
     //TODO: range check of targetTemp
     ErrorCode retVal = ErrorCode::E_NOT_OK;

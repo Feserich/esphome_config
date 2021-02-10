@@ -248,10 +248,10 @@ bool observeRoomTemperatureDeltaClb(void *)
 //---------------------------------------------------
 void setup()
 {  
-#if (PLATFORM_IO == ESP8266)
+#if (HONEYWELL_MANAGER == HR20_V1)
     HoneywellSerial.begin(2400, SERIAL_8E1);
     DbgSerial.begin(9600);
-#elif (PLATFORM_IO == ESP32)
+#elif (HONEYWELL_MANAGER == OPEN_HR20)
     HoneywellSerial.begin(9600, SERIAL_8N1);
     DbgSerial.begin(9600);
 #endif

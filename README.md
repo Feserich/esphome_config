@@ -9,6 +9,6 @@ The UART protocoll for Hardware version 1 was reengineered, to manipulate the me
 The protocoll for the OpenHR20 firmware can be found [here](https://www.mikrocontroller.net/articles/Heizungssteuerung_mit_Honeywell_HR20#UART_Protocoll)
 
 **Here is a wiring example:**
-<img src="https://gitlab.com/Feserich/ParticleRemote-PhotonCode/-/raw/master/Wiring%20Example/Photon%20Wiring_bb.png" width="420"/>
+<img src="https://raw.githubusercontent.com/Feserich/ParticleRemote-PhotonCode/master/Wiring%20Example/Photon%20Wiring_bb.png" width="420"/>
 
 

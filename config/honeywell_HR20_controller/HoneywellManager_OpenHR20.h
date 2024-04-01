@@ -132,6 +132,7 @@ ErrorCode HoneywellManager_OpenHR20::SetDesiredTemperature(int temperature)
         if (n > 0)
         {
             serial_device_.write_str(buffer);
+            serial_device_.flush();
             retVal = ErrorCode::E_OK;
         }
     }
@@ -146,10 +147,12 @@ ErrorCode HoneywellManager_OpenHR20::SetMode(Mode mode)
     if (mode == Mode::E_MANUAL)
     {
         serial_device_.write_str("\nM00\n");
+        serial_device_.flush();
     }
     else if (mode == Mode::E_AUTOMATIC)
     {
         serial_device_.write_str("\nM01\n");
+        serial_device_.flush();
     }
     else
     {

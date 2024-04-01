@@ -2,8 +2,8 @@
 #ifndef ESPHOME_CLIMATE_HONEYWELL_ADAPTER_H
 #define ESPHOME_CLIMATE_HONEYWELL_ADAPTER_H
 
-#include "HoneywellManager_HR20_V1.h"
-//#include "HoneywellManager_OpenHR20.h"
+// #include "HoneywellManager_HR20_V1.h"
+#include "HoneywellManager_OpenHR20.h"
 #include "IHoneywellManager.h"
 #include "esphome.h"
 
@@ -14,10 +14,10 @@ public:
     EsphomeClimateHoneywellAdapter() = delete;
 
     /// custom c'tor
-    explicit EsphomeClimateHoneywellAdapter(UARTComponent* parent_component, sensor::Sensor* temp_sensor_ptr = nullptr)
+    explicit EsphomeClimateHoneywellAdapter(UARTComponent* parent_component)
         : PollingComponent(10 * 60 * 1000)
         , honeywell_manager_(parent_component)
-        , temp_sensor_ptr_(temp_sensor_ptr)
+    //, temp_sensor_ptr_(temp_sensor_ptr)
     {
     }
 
@@ -59,7 +59,7 @@ public:
         auto traits = climate::ClimateTraits();
         traits.set_supports_current_temperature(true);
         traits.set_supported_modes({ climate::CLIMATE_MODE_AUTO, climate::CLIMATE_MODE_HEAT, climate::CLIMATE_MODE_OFF });
-        traits.set_visual_min_temperature(7.5);
+        traits.set_visual_min_temperature(8.0);
         traits.set_visual_max_temperature(28.0);
         traits.set_visual_temperature_step(0.5);
 
@@ -104,6 +104,7 @@ public:
     {
         // if an external temperature sensor is given, receive it's value and set if for this climate instance
         // Current temperature format from HR20_V1 is unknown from an A/D converter --> receive current temperature from external sensor.
+        /*
         if (temp_sensor_ptr_ != nullptr)
         {
             if (temp_sensor_ptr_->has_state())
@@ -111,6 +112,7 @@ public:
                 this->current_temperature = temp_sensor_ptr_->get_state();
             }
         }
+        */
     }
 
     esphome::optional<float> set_mode(ClimateMode mode)
@@ -122,10 +124,6 @@ public:
         if (mode == ClimateMode::CLIMATE_MODE_OFF)
         {
             error_code = honeywell_manager_.SetMode(Mode::E_MANUAL);
-            if (ErrorCode::E_OK == error_code)
-            {
-                target_temperature_opt = esphome::optional<float>(7.5);
-            }
         }
         else if (mode == ClimateMode::CLIMATE_MODE_HEAT)
         {
@@ -135,9 +133,11 @@ public:
         else if (mode == ClimateMode::CLIMATE_MODE_AUTO)
         {
             error_code = honeywell_manager_.SetMode(Mode::E_AUTOMATIC);
-            if (ErrorCode::E_OK == error_code)
+
+            int desiredTemperature = 0;
+            if (ErrorCode::E_OK == honeywell_manager_.GetDesiredTemperature(desiredTemperature))
             {
-                target_temperature_opt = esphome::optional<float>(7.5);
+                this->target_temperature = static_cast<float>(desiredTemperature) / 10.0;
             }
         }
         else
@@ -157,7 +157,8 @@ public:
 
     void set_target_temperature(float target_temperature)
     {
-        ErrorCode error_code = honeywell_manager_.SetDesiredTemperature(static_cast<int>(target_temperature * 10.0));
+        const int expected_temperature = static_cast<int>(target_temperature * 10.0);
+        ErrorCode error_code           = honeywell_manager_.SetDesiredTemperature(expected_temperature);
 
         // only if setting the temeperature was successful, update the target temperature for the GUI
         if (ErrorCode::E_OK == error_code)
@@ -167,10 +168,10 @@ public:
     }
 
     /// @brief Honeywell Manager instance
-    HoneywellManager_HR20_V1 honeywell_manager_;
+    HoneywellManager_OpenHR20 honeywell_manager_;
 
     /// @brief Pointer to an external temperature sensor to set the current temperature
-    sensor::Sensor* temp_sensor_ptr_;
+    // sensor::Sensor* temp_sensor_ptr_;
 };
 
 #endif

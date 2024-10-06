@@ -45,31 +45,71 @@ esp32_ble_tracker:
             const float humidity = (basenum % 1000) / 10.0f;
             const float battery_level = uint16_t(x[5]) / 1.0f;
 
-            id(hallway_temperature).publish_state(temperature);
-            id(hallway_humidity).publish_state(humidity);
-            id(hallway_battery).publish_state(battery_level);
+            id(govee_1_temperature).publish_state(temperature);
+            id(govee_1_humidity).publish_state(humidity);
+            id(govee_1_battery).publish_state(battery_level);
+
+    - mac_address: D6:35:33:33:60:76
+      manufacturer_id: '0001'
+      then:
+        - lambda: |-
+            const int basenum = (int16_t(x[2]) << 16) + (int16_t(x[3]) << 8) + int16_t(x[4]);
+            const float temperature = (basenum / 10000.0f);
+            const float humidity = (basenum % 1000) / 10.0f;
+            const float battery_level = uint16_t(x[5]) / 1.0f;
+
+            id(govee_2_temperature).publish_state(temperature);
+            id(govee_2_humidity).publish_state(humidity);
+            id(govee_2_battery).publish_state(battery_level);
 
 binary_sensor:
   - platform: ble_presence
     mac_address: C7:35:33:33:66:73
-    name: "Hallway Govee H5105"
+    name: "Govee H5179 #1"
+
+  - platform: ble_presence
+    mac_address: D6:35:33:33:60:76
+    name: "Govee H5179 #2"
 
 sensor:
   - platform: ble_rssi
     mac_address: C7:35:33:33:66:73
-    name: "Hallway RSSI"
+    name: "Govee #1 RSSI"
   - platform: template
-    name: "Hallway Humidity"
-    id: hallway_humidity
+    name: "Govee #1 Humidity"
+    id: govee_1_humidity
     unit_of_measurement: '%'
     icon: "mdi:water-percent"
+    state_class: "measurement"
   - platform: template
-    name: "Hallway Temperature"
-    id: hallway_temperature
+    name: "Govee #1 Temperature"
+    id: govee_1_temperature
     unit_of_measurement: '°C'
     icon: "mdi:thermometer"
+    state_class: "measurement"
   - platform: template
-    name: "Hallway Battery"
-    id: hallway_battery
+    name: "Govee #1 Battery"
+    id: govee_1_battery
+    unit_of_measurement: '%'
+    icon: "mdi:battery"
+
+  - platform: ble_rssi
+    mac_address: D6:35:33:33:60:76
+    name: "Govee #2 RSSI"
+  - platform: template
+    name: "Govee #2 Humidity"
+    id: govee_2_humidity
+    unit_of_measurement: '%'
+    icon: "mdi:water-percent"
+    state_class: "measurement"
+  - platform: template
+    name: "Govee #2 Temperature"
+    id: govee_2_temperature
+    unit_of_measurement: '°C'
+    icon: "mdi:thermometer"
+    state_class: "measurement"
+  - platform: template
+    name: "Govee #2 Battery"
+    id: govee_2_battery
     unit_of_measurement: '%'
     icon: "mdi:battery"

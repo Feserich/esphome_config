@@ -11,6 +11,7 @@ esp32:
 
 # Enable logging
 logger:
+  level: DEBUG
 
 
 # Enable Home Assistant API
@@ -62,6 +63,34 @@ esp32_ble_tracker:
             id(govee_2_temperature).publish_state(temperature);
             id(govee_2_humidity).publish_state(humidity);
             id(govee_2_battery).publish_state(battery_level);
+  
+    - mac_address: A4:C1:38:50:40:4E
+      manufacturer_id: 'EC88'
+      then:
+        - lambda: |-
+            uint16_t hum_lsb = x[3] + (x[4] << 8);
+            float humidity= float(hum_lsb)/100.0;
+            int16_t temp_lsb = x[1] + (x[2] << 8);
+            float temperature = float(temp_lsb)/100.0;
+            int16_t battery=x[5];
+
+            id(govee_3_humidity).publish_state(humidity);
+            id(govee_3_temperature).publish_state(temperature);
+            id(govee_3_battery).publish_state(battery);
+
+    - mac_address: A4:C1:38:40:40:25
+      manufacturer_id: 'EC88'
+      then:
+        - lambda: |-
+            uint16_t hum_lsb = x[3] + (x[4] << 8);
+            float humidity= float(hum_lsb)/100.0;
+            int16_t temp_lsb = x[1] + (x[2] << 8);
+            float temperature = float(temp_lsb)/100.0;
+            int16_t battery=x[5];
+
+            id(govee_4_humidity).publish_state(humidity);
+            id(govee_4_temperature).publish_state(temperature);
+            id(govee_4_battery).publish_state(battery);
 
 binary_sensor:
   - platform: ble_presence
@@ -71,6 +100,15 @@ binary_sensor:
   - platform: ble_presence
     mac_address: D6:35:33:33:60:76
     name: "Govee H5179 #2"
+
+  - platform: ble_presence
+    mac_address: A4:C1:38:50:40:4E
+    name: "Govee H5074 #3"
+
+  - platform: ble_presence
+    mac_address: A4:C1:38:40:40:25
+    name: "Govee H5074 #4"
+
 
 sensor:
   - platform: ble_rssi
@@ -114,3 +152,47 @@ sensor:
     id: govee_2_battery
     unit_of_measurement: '%'
     icon: "mdi:battery"
+
+  - platform: ble_rssi
+    mac_address: A4:C1:38:50:40:4E
+    name: "Govee #3 RSSI"
+  - platform: template
+    name: "Govee #3 Humidity"
+    id: govee_3_humidity
+    unit_of_measurement: '%'
+    icon: "mdi:water-percent"
+    state_class: "measurement"
+  - platform: template
+    name: "Govee #3 Temperature"
+    id: govee_3_temperature
+    unit_of_measurement: '°C'
+    icon: "mdi:thermometer"
+    state_class: "measurement"
+  - platform: template
+    name: "Govee #3 Battery"
+    id: govee_3_battery
+    unit_of_measurement: '%'
+    icon: "mdi:battery"
+
+  - platform: ble_rssi
+    mac_address: A4:C1:38:40:40:25
+    name: "Govee #4 RSSI"
+  - platform: template
+    name: "Govee #4 Humidity"
+    id: govee_4_humidity
+    unit_of_measurement: '%'
+    icon: "mdi:water-percent"
+    state_class: "measurement"
+  - platform: template
+    name: "Govee #4 Temperature"
+    id: govee_4_temperature
+    unit_of_measurement: '°C'
+    icon: "mdi:thermometer"
+    state_class: "measurement"
+  - platform: template
+    name: "Govee #4 Battery"
+    id: govee_4_battery
+    unit_of_measurement: '%'
+    icon: "mdi:battery"
+
+
